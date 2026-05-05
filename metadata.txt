@@ -1,0 +1,16 @@
+[general]
+name=RSRP Thematic Converter
+qgisMinimumVersion=3.22
+description=Import CSV or GeoPackage data, style it by RSRP, and export the result as KMZ for Google Earth.
+version=1.0.0 (Beta Version)
+author=Taufik Andrian
+email= Taufik.andrian0484@gmail.com
+about=Loads CSV or GeoPackage data, converts CSV to a spatial layer when needed, applies fixed graduated ranges based on "Serving Cell Average RSRP (dBm)", and exports the styled result as KMZ.
+category=Vector
+icon=resources/icons/RSRP_logo.png
+experimental=False
+deprecated=False
+tracker=
+repository=
+homepage=
+tags=csv,gpkg,geopackage,geopandas,rsrp,thematic,graduated,kml,kmz,google earth
