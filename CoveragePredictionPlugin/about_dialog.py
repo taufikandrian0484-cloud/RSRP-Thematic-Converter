@@ -5,9 +5,16 @@ from __future__ import annotations
 import configparser
 import os
 
-from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtGui import QPixmap
 from qgis.PyQt.QtWidgets import QDialog, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+
+from .qt_compat import (
+    ALIGN_RIGHT,
+    ALIGN_TOP,
+    ALIGN_VCENTER,
+    KEEP_ASPECT_RATIO,
+    SMOOTH_TRANSFORMATION,
+)
 
 
 def load_metadata() -> dict:
@@ -34,12 +41,12 @@ class AboutDialog(QDialog):
         if os.path.exists(icon_path):
             pixmap = QPixmap(icon_path)
             if not pixmap.isNull():
-                icon_label.setPixmap(pixmap.scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        header.addWidget(icon_label, alignment=Qt.AlignTop)
+                icon_label.setPixmap(pixmap.scaled(48, 48, KEEP_ASPECT_RATIO, SMOOTH_TRANSFORMATION))
+        header.addWidget(icon_label, alignment=ALIGN_TOP)
 
         title = QLabel(self.metadata.get("name", "Coverage Prediction"))
         title.setStyleSheet("font-size: 18px; font-weight: 700;")
-        header.addWidget(title, stretch=1, alignment=Qt.AlignVCenter)
+        header.addWidget(title, stretch=1, alignment=ALIGN_VCENTER)
         layout.addLayout(header)
 
         layout.addWidget(QLabel(f'Version: {self.metadata.get("version", "-")}'))
@@ -61,4 +68,4 @@ class AboutDialog(QDialog):
 
         close_button = QPushButton("Close")
         close_button.clicked.connect(self.accept)
-        layout.addWidget(close_button, alignment=Qt.AlignRight)
+        layout.addWidget(close_button, alignment=ALIGN_RIGHT)

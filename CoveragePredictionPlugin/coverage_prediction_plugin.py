@@ -11,9 +11,15 @@ from __future__ import annotations
 import os
 from typing import List, Optional
 
-from qgis.PyQt.QtCore import QObject, Qt, QThread, pyqtSignal
+from qgis.PyQt.QtCore import QObject, QThread, pyqtSignal
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QMessageBox
+from qgis.PyQt.QtWidgets import QMessageBox
+
+# QAction moved from QtWidgets (PyQt5) to QtGui (PyQt6 / QGIS 4).
+try:  # PyQt6 / QGIS 4
+    from qgis.PyQt.QtGui import QAction
+except ImportError:  # pragma: no cover - PyQt5 / QGIS 3
+    from qgis.PyQt.QtWidgets import QAction
 
 from qgis.core import QgsProject, QgsRectangle, QgsVectorLayer
 

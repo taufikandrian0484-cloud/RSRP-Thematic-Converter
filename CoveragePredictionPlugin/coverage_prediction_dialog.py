@@ -16,7 +16,7 @@ from __future__ import annotations
 import os
 from typing import Callable, Optional
 
-from qgis.PyQt.QtCore import Qt, pyqtSignal
+from qgis.PyQt.QtCore import pyqtSignal
 from qgis.PyQt.QtGui import QColor, QIcon
 from qgis.PyQt.QtWidgets import (
     QCheckBox,
@@ -42,12 +42,27 @@ from qgis.PyQt.QtWidgets import (
     QWidget,
 )
 
-# Matplotlib is bundled with QGIS, so we can rely on it.
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from qgis.core import QgsCoordinateReferenceSystem, QgsProject, QgsRectangle
 from qgis.gui import QgsMapCanvas
+
+# Compatibility constants that resolve to the right enum on PyQt5 (QGIS 3.x)
+# and PyQt6 (QGIS 4.x). Importing the matplotlib backend through ``qt_compat``
+# also picks the correct backend module for the running Qt binding.
+from .qt_compat import (
+    ALIGN_CENTER,
+    ALIGN_LEFT,
+    FigureCanvas,
+    HORIZONTAL,
+    NO_EDIT_TRIGGERS,
+    QFRAME_STYLED_PANEL,
+    SELECT_ROWS,
+    SINGLE_SELECTION,
+    SIZE_POLICY_EXPANDING,
+    VERTICAL,
+    WHITE,
+)
 
 
 COVERAGE_LEGEND = (
@@ -95,7 +110,7 @@ class CoveragePredictionDialog(QDialog):
         root.setContentsMargins(8, 8, 8, 8)
         root.setSpacing(6)
 
-        splitter = QSplitter(Qt.Horizontal)
+        splitter = QSplitter(HORIZONTAL)
         splitter.setChildrenCollapsible(False)
         splitter.addWidget(self._build_left_panel())
         splitter.addWidget(self._build_right_panel())
@@ -147,7 +162,7 @@ class CoveragePredictionDialog(QDialog):
         # ---- Site location -----------------------------------------
         site_box = QGroupBox("Site Location")
         site_form = QFormLayout(site_box)
-        site_form.setLabelAlignment(Qt.AlignLeft)
+        site_form.setLabelAlignment(ALIGN_LEFT)
 
         self.latitude_spin = self._make_double_spin(-90.0, 90.0, 5, -6.88908, suffix="")
         self.longitude_spin = self._make_double_spin(-180.0, 180.0, 5, 107.61848, suffix="")
@@ -161,7 +176,7 @@ class CoveragePredictionDialog(QDialog):
         # ---- RF Parameters -----------------------------------------
         rf_box = QGroupBox("RF Parameters")
         rf_form = QFormLayout(rf_box)
-        rf_form.setLabelAlignment(Qt.AlignLeft)
+        rf_form.setLabelAlignment(ALIGN_LEFT)
 
         self.unit_combo = QComboBox()
         self.unit_combo.addItems(["Metric (m, km)", "Imperial (ft, mi)"])
@@ -175,7 +190,7 @@ class CoveragePredictionDialog(QDialog):
             "background-color: #d6ecf3; color: #1f6f8b; font-weight: 700; padding: 4px 10px;"
             "border-radius: 3px; min-width: 80px;"
         )
-        self.total_tilt_label.setAlignment(Qt.AlignCenter)
+        self.total_tilt_label.setAlignment(ALIGN_CENTER)
         self.vertical_beamwidth_spin = self._make_double_spin(0.5, 90.0, 1, 6.0, suffix="\u00b0")
         self.horizontal_beamwidth_spin = self._make_double_spin(1.0, 360.0, 2, 65.0, suffix="\u00b0")
         self.frequency_spin = self._make_double_spin(50.0, 100_000.0, 1, 2_100.0, suffix=" MHz")
@@ -206,7 +221,7 @@ class CoveragePredictionDialog(QDialog):
         range_layout.addLayout(range_form)
 
         slider_row = QHBoxLayout()
-        self.distance_slider = QSlider(Qt.Horizontal)
+        self.distance_slider = QSlider(HORIZONTAL)
         self.distance_slider.setRange(50, 50_000)
         self.distance_slider.setValue(5_000)
         self.distance_slider_label = QLabel("5000 m")
@@ -301,16 +316,16 @@ class CoveragePredictionDialog(QDialog):
         )
         self.tilt_table.horizontalHeader().setStretchLastSection(True)
         self.tilt_table.verticalHeader().setVisible(False)
-        self.tilt_table.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.tilt_table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.tilt_table.setSelectionMode(QTableWidget.SingleSelection)
+        self.tilt_table.setEditTriggers(NO_EDIT_TRIGGERS)
+        self.tilt_table.setSelectionBehavior(SELECT_ROWS)
+        self.tilt_table.setSelectionMode(SINGLE_SELECTION)
         layout.addWidget(self.tilt_table, stretch=1)
         return widget
 
     # -- right panel ---------------------------------------------------
 
     def _build_right_panel(self) -> QWidget:
-        wrapper = QSplitter(Qt.Vertical)
+        wrapper = QSplitter(VERTICAL)
         wrapper.setChildrenCollapsible(False)
         wrapper.addWidget(self._build_terrain_panel())
         wrapper.addWidget(self._build_coverage_panel())
@@ -321,7 +336,7 @@ class CoveragePredictionDialog(QDialog):
 
     def _build_terrain_panel(self) -> QWidget:
         widget = QFrame()
-        widget.setFrameShape(QFrame.StyledPanel)
+        widget.setFrameShape(QFRAME_STYLED_PANEL)
         layout = QVBoxLayout(widget)
         layout.setContentsMargins(10, 6, 10, 6)
         layout.setSpacing(6)
@@ -338,7 +353,7 @@ class CoveragePredictionDialog(QDialog):
 
         self.figure = Figure(figsize=(5, 3.2), tight_layout=True)
         self.figure_canvas = FigureCanvas(self.figure)
-        self.figure_canvas.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.figure_canvas.setSizePolicy(SIZE_POLICY_EXPANDING, SIZE_POLICY_EXPANDING)
         layout.addWidget(self.figure_canvas, stretch=1)
 
         self.axes = self.figure.add_subplot(111)
@@ -348,7 +363,7 @@ class CoveragePredictionDialog(QDialog):
 
     def _build_coverage_panel(self) -> QWidget:
         widget = QFrame()
-        widget.setFrameShape(QFrame.StyledPanel)
+        widget.setFrameShape(QFRAME_STYLED_PANEL)
         layout = QVBoxLayout(widget)
         layout.setContentsMargins(10, 6, 10, 6)
         layout.setSpacing(6)
@@ -379,7 +394,7 @@ class CoveragePredictionDialog(QDialog):
 
         canvas_row = QHBoxLayout()
         self.map_canvas = QgsMapCanvas()
-        self.map_canvas.setCanvasColor(Qt.white)
+        self.map_canvas.setCanvasColor(WHITE)
         self.map_canvas.setDestinationCrs(QgsCoordinateReferenceSystem("EPSG:4326"))
         self.map_canvas.setExtent(QgsRectangle(95.0, -11.0, 141.0, 6.0))
         self.map_canvas.refresh()
@@ -399,7 +414,7 @@ class CoveragePredictionDialog(QDialog):
 
     def _build_legend_panel(self) -> QWidget:
         legend = QFrame()
-        legend.setFrameShape(QFrame.StyledPanel)
+        legend.setFrameShape(QFRAME_STYLED_PANEL)
         legend.setStyleSheet("QFrame { background-color: #ffffff; border: 1px solid #cfd8dc; }")
         layout = QVBoxLayout(legend)
         layout.setContentsMargins(8, 8, 8, 8)
