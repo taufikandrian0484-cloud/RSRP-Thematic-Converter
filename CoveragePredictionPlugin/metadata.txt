@@ -1,0 +1,16 @@
+[general]
+name=Coverage Prediction
+qgisMinimumVersion=3.22
+description=RF coverage prediction with terrain-aware beam analysis, antenna tilt optimisation, sector footprint mapping, and KMZ export.
+version=1.0.0
+author=Taufik Andrian
+email=Taufik.andrian0484@gmail.com
+about=Coverage Prediction is a QGIS plugin that mirrors the propagationpredict.onrender.com workflow. It samples a digital elevation model along the antenna bearing, evaluates the main, upper and lower beam profiles, estimates received signal level along the radial, and renders the coverage footprint as a graduated layer on the QGIS map canvas. The result can be exported to KMZ for use in Google Earth.
+category=Plugins
+icon=resources/icons/coverage_logo.svg
+experimental=False
+deprecated=False
+tracker=https://github.com/taufikandrian0484-cloud/RSRP-Thematic-Converter/issues
+repository=https://github.com/taufikandrian0484-cloud/RSRP-Thematic-Converter
+homepage=https://github.com/taufikandrian0484-cloud/RSRP-Thematic-Converter
+tags=rf,coverage,propagation,prediction,antenna,tilt,beamwidth,terrain,dem,kmz,google earth,planning,radio
